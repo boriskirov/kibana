@@ -5,12 +5,14 @@
  * 2.0.
  */
 
-import { EuiFlexGroup, EuiFlexItem, EuiTitle } from '@elastic/eui';
+import { useEuiTheme } from '@elastic/eui';
+import { EuiFlexGroup, EuiFlexItem, EuiPanel, EuiTitle } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 import React from 'react';
 import { ConnectionStatsItemWithComparisonData } from '../../../../common/connections';
 import { useBreakpoints } from '../../../hooks/use_breakpoints';
 import { FETCH_STATUS } from '../../../hooks/use_fetcher';
+import { SparkPlotBig } from '../charts/spark_plot_big';
 import { EmptyMessage } from '../empty_message';
 import { ITableColumn, ManagedTable } from '../managed_table';
 import { OverviewTableContainer } from '../overview_table_container';
@@ -112,12 +114,108 @@ export function DependenciesTable(props: Props) {
     })
   );
 
+  const data1 = [
+    { x: 0, y: 2 },
+
+    { x: 1, y: 7 },
+
+    { x: 2, y: 3 },
+
+    { x: 3, y: 6 },
+  ];
+
+  const data2 = [
+    { x: 0, y: 1 },
+
+    { x: 1, y: 41 },
+
+    { x: 2, y: 15 },
+
+    { x: 3, y: 1 },
+  ];
+
+  const data3 = [
+    { x: 0, y: 17 },
+
+    { x: 1, y: 16 },
+
+    { x: 2, y: 12 },
+
+    { x: 3, y: 0 },
+  ];
+
+  const { euiTheme } = useEuiTheme();
+
   return (
     <EuiFlexGroup
       direction="column"
       gutterSize="s"
       data-test-subj="dependenciesTable"
     >
+      <EuiFlexItem>
+        <EuiPanel hasBorder={true}>
+          <EuiFlexGroup direction="row" gutterSize="s">
+            <EuiFlexItem>
+              <SparkPlotBig
+                title="Throughput"
+                color={euiTheme.colors.warning}
+                isLoading={false}
+                series={data2}
+                valueLabel={i18n.translate(
+                  'xpack.apm.errorsTable.occurrences',
+                  {
+                    defaultMessage: `74,9 tpm`,
+                    values: {
+                      occurrences: 2,
+                    },
+                  }
+                )}
+                comparisonSeries={data2}
+                comparisonSeriesColor={euiTheme.colors.warning}
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <SparkPlotBig
+                title="Error rate"
+                color={euiTheme.colors.success}
+                isLoading={false}
+                series={data1}
+                valueLabel={i18n.translate(
+                  'xpack.apm.errorsTable.occurrences',
+                  {
+                    defaultMessage: `24%`,
+                    values: {
+                      occurrences: 2,
+                    },
+                  }
+                )}
+                comparisonSeries={data1}
+                comparisonSeriesColor={euiTheme.colors.success}
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <SparkPlotBig
+                title="Latency"
+                color={euiTheme.colors.accent}
+                isLoading={false}
+                series={data3}
+                valueLabel={i18n.translate(
+                  'xpack.apm.errorsTable.occurrences',
+                  {
+                    defaultMessage: `38,2 ms`,
+                    values: {
+                      occurrences: 2,
+                    },
+                  }
+                )}
+                comparisonSeries={data3}
+                comparisonSeriesColor={euiTheme.colors.accent}
+              />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiPanel>
+      </EuiFlexItem>
+
       <EuiFlexItem>
         <EuiFlexGroup responsive={false} justifyContent="spaceBetween">
           <EuiFlexItem grow={false}>

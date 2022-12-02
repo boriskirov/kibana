@@ -32,6 +32,7 @@ import { useApmPluginContext } from '../../../context/apm_plugin/use_apm_plugin_
 import { isPending } from '../../../hooks/use_fetcher';
 import { asTransactionRate } from '../../../../common/utils/formatters';
 import { getIndexManagementHref } from './get_storage_explorer_links';
+import { SparkPlotBig } from '../../shared/charts/spark_plot_big';
 
 export function SummaryStats() {
   const router = useApmRouter();
@@ -82,6 +83,18 @@ export function SummaryStats() {
 
   const hasData = !isEmpty(data);
 
+  const data3 = [
+    { x: 0, y: 17 },
+
+    { x: 1, y: 16 },
+
+    { x: 2, y: 12 },
+
+    { x: 3, y: 0 },
+  ];
+
+  const { euiTheme } = useEuiTheme();
+
   return (
     <EuiPanel
       hasBorder={true}
@@ -129,6 +142,7 @@ export function SummaryStats() {
               loading={loading}
               hasData={hasData}
             />
+
             <SummaryMetric
               label={i18n.translate(
                 'xpack.apm.storageExplorer.summary.incrementalSize',
@@ -179,6 +193,20 @@ export function SummaryStats() {
               value={(data?.numberOfServices ?? 0).toString()}
               loading={loading}
               hasData={hasData}
+            />
+            <SparkPlotBig
+              title="Daily data ingestion"
+              color={euiTheme.colors.accent}
+              isLoading={false}
+              series={data3}
+              valueLabel={i18n.translate('xpack.apm.errorsTable.occurrences', {
+                defaultMessage: `38,2 ms`,
+                values: {
+                  occurrences: 2,
+                },
+              })}
+              comparisonSeries={data3}
+              comparisonSeriesColor={euiTheme.colors.accent}
             />
           </EuiFlexGroup>
         </EuiFlexItem>
