@@ -5,7 +5,7 @@
  * 2.0.
  */
 
-import { EuiBadge, EuiButton, EuiButtonIcon, EuiLink, EuiToolTip } from '@elastic/eui';
+import { EuiBadge, EuiButtonEmpty, EuiButtonIcon, EuiLink, EuiToolTip } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 import type { IlmLocatorParams } from '@kbn/index-lifecycle-management-common-shared';
 import { ILM_LOCATOR_ID } from '@kbn/index-lifecycle-management-common-shared';
@@ -207,16 +207,16 @@ export function DiscoverBadgeButton({
   );
 
   return spellOut ? (
-    <EuiButton
+    <EuiButtonEmpty
       data-test-subj={`streamsDiscoverActionButton-${definition.stream.name}`}
       href={discoverLink}
       size="s"
       aria-label={ariaLabel}
     >
-      {i18n.translate('xpack.streams.entityDetailViewWithoutParams.openInDiscoverBadgeLabel', {
-        defaultMessage: 'View in Discover',
+      {i18n.translate('xpack.streams.entityDetailViewWithoutParams.openInDiscoverButtonLabel', {
+        defaultMessage: 'Open in Discover',
       })}
-    </EuiButton>
+    </EuiButtonEmpty>
   ) : (
     <EuiButtonIcon
       data-test-subj={`streamsDiscoverActionButton-${definition.stream.name}`}
