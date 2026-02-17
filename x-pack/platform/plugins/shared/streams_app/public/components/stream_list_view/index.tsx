@@ -8,6 +8,7 @@
 import {
   EuiButton,
   EuiButtonEmpty,
+  EuiButtonGroup,
   EuiEmptyPrompt,
   EuiFlexGroup,
   EuiFlexItem,
@@ -20,11 +21,13 @@ import { i18n } from '@kbn/i18n';
 import { Streams } from '@kbn/streams-schema';
 import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
+import useAsync from 'react-use/lib/useAsync';
 import { useKibana } from '../../hooks/use_kibana';
 import { useStreamsAppFetch } from '../../hooks/use_streams_app_fetch';
 import { useStreamsAppRouter } from '../../hooks/use_streams_app_router';
 import { useStreamsPrivileges } from '../../hooks/use_streams_privileges';
 import { useTimefilter } from '../../hooks/use_timefilter';
+import { useStreamDocCountsFetch } from '../../hooks/use_streams_doc_counts_fetch';
 import { FeedbackButton } from '../feedback_button';
 import { StreamsAppPageTemplate } from '../streams_app_page_template';
 import { WelcomeTourCallout } from '../streams_tour';
@@ -32,8 +35,25 @@ import { ClassicStreamCreationFlyout } from './classic_stream_creation_flyout';
 import { StreamsListEmptyPrompt } from './streams_list_empty_prompt';
 import { StreamsSettingsFlyout } from './streams_settings_flyout';
 import { StreamsTreeTable } from './tree_table';
+import { StreamsMap } from './streams_map';
 import { CreateQueryStreamFlyout } from '../query_streams/create_query_stream_flyout';
 import { getFormattedError } from '../../util/errors';
+import { STREAM_LIST_VIEW_LABEL, STREAM_MAP_VIEW_LABEL } from './translations';
+
+type StreamsViewMode = 'list' | 'map';
+
+const VIEW_MODE_OPTIONS = [
+  {
+    id: 'list' as const,
+    label: STREAM_LIST_VIEW_LABEL,
+    iconType: 'list',
+  },
+  {
+    id: 'map' as const,
+    label: STREAM_MAP_VIEW_LABEL,
+    iconType: 'graphApp',
+  },
+];
 
 export function StreamListView() {
   const { euiTheme } = useEuiTheme();
@@ -124,6 +144,75 @@ export function StreamListView() {
   const [isSettingsFlyoutOpen, setIsSettingsFlyoutOpen] = React.useState(false);
   const [isClassicStreamCreationFlyoutOpen, setIsClassicStreamCreationFlyoutOpen] =
     React.useState(false);
+  const [viewMode, setViewMode] = useState<StreamsViewMode>('list');
+
+  const handleViewModeChange = (id: string) => {
+    setViewMode(id as StreamsViewMode);
+  };
+
+  // Fetch doc counts and quality data for the map view
+  const numDataPoints = 25;
+  const { getStreamDocCounts } = useStreamDocCountsFetch({
+    groupTotalCountByTimestamp: true,
+    canReadFailureStore: false,
+    numDataPoints,
+  });
+
+  const docCountsFetch = getStreamDocCounts();
+  const totalDocsResult = useAsync(() => docCountsFetch.docCount, [docCountsFetch]);
+  const degradedDocsResult = useAsync(() => docCountsFetch.degradedDocCount, [docCountsFetch]);
+
+  const docsByStream = useMemo(() => {
+    if (!totalDocsResult.value) {
+      return {} as Record<string, number>;
+    }
+    return totalDocsResult.value.reduce(
+      (acc, { stream, count }) => {
+        acc[stream] = count;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+  }, [totalDocsResult.value]);
+
+  const degradedByStream = useMemo(() => {
+    if (!degradedDocsResult.value) {
+      return {} as Record<string, number>;
+    }
+    return degradedDocsResult.value.reduce(
+      (acc, { stream, count }) => {
+        acc[stream] = count;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+  }, [degradedDocsResult.value]);
+
+  const qualityByStream = useMemo(() => {
+    const qualities: Record<string, 'good' | 'degraded' | 'poor'> = {};
+    const datasets = new Set([...Object.keys(docsByStream), ...Object.keys(degradedByStream)]);
+
+    datasets.forEach((dataset) => {
+      const totalDocs = docsByStream[dataset] ?? 0;
+      const degradedDocs = degradedByStream[dataset] ?? 0;
+
+      // Calculate quality based on degraded percentage
+      if (totalDocs === 0) {
+        qualities[dataset] = 'good';
+      } else {
+        const degradedPercentage = (degradedDocs / totalDocs) * 100;
+        if (degradedPercentage >= 3) {
+          qualities[dataset] = 'poor';
+        } else if (degradedPercentage >= 0.5) {
+          qualities[dataset] = 'degraded';
+        } else {
+          qualities[dataset] = 'good';
+        }
+      }
+    });
+
+    return qualities;
+  }, [docsByStream, degradedByStream]);
 
   return (
     <>
@@ -190,6 +279,18 @@ export function StreamListView() {
                 <CreateQueryStreamFlyout onQueryStreamCreated={streamsListFetch.refresh} />
               </EuiFlexItem>
             )}
+            <EuiFlexItem grow={false}>
+              <EuiButtonGroup
+                legend={i18n.translate('xpack.streams.streamsListView.viewModeLegend', {
+                  defaultMessage: 'Select view mode',
+                })}
+                options={VIEW_MODE_OPTIONS}
+                idSelected={viewMode}
+                onChange={handleViewModeChange}
+                buttonSize="compressed"
+                data-test-subj="streamsViewModeToggle"
+              />
+            </EuiFlexItem>
           </EuiFlexGroup>
         }
       />
@@ -213,11 +314,28 @@ export function StreamListView() {
               hasClassicStreams={hasClassicStreams}
               firstClassicStreamName={firstClassicStreamName}
             />
-            <StreamsTreeTable
-              loading={streamsListFetch.loading}
-              streams={streamsListFetch.value?.streams}
-              canReadFailureStore={streamsListFetch.value?.canReadFailureStore}
-            />
+            {viewMode === 'list' ? (
+              <StreamsTreeTable
+                loading={streamsListFetch.loading}
+                streams={streamsListFetch.value?.streams}
+                canReadFailureStore={streamsListFetch.value?.canReadFailureStore}
+              />
+            ) : (
+              <div
+                css={css`
+                  height: 100%;
+                  width: 100%;
+                  flex: 1;
+                `}
+              >
+                <StreamsMap
+                  loading={streamsListFetch.loading}
+                  streams={streamsListFetch.value?.streams}
+                  docsByStream={docsByStream}
+                  qualityByStream={qualityByStream}
+                />
+              </div>
+            )}
           </>
         )}
       </StreamsAppPageTemplate.Body>

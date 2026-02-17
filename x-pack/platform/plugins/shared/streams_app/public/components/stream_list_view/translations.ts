@@ -84,3 +84,31 @@ export const NO_RETENTION_LABEL = i18n.translate(
   'xpack.streams.streamsRetentionColumn.noDataAriaLabel',
   { defaultMessage: 'No retention policy configured' }
 );
+
+export const STREAM_LIST_VIEW_LABEL = i18n.translate(
+  'xpack.streams.streamsListView.streamListViewLabel',
+  {
+    defaultMessage: 'Stream list',
+  }
+);
+
+export const STREAM_MAP_VIEW_LABEL = i18n.translate(
+  'xpack.streams.streamsListView.streamMapViewLabel',
+  {
+    defaultMessage: 'Stream map',
+  }
+);
+
+export const STREAMS_MAP_ARIA_LABEL = i18n.translate(
+  'xpack.streams.streamsListView.streamsMapAriaLabel',
+  {
+    defaultMessage: 'Stream map showing parent-child relationships between streams',
+  }
+);
+
+export const STREAMS_MAP_EMPTY_MESSAGE = i18n.translate(
+  'xpack.streams.streamsListView.streamsMapEmptyMessage',
+  {
+    defaultMessage: 'No streams to display',
+  }
+);

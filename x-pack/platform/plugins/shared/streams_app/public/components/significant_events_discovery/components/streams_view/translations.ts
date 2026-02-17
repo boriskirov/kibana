@@ -106,3 +106,31 @@ export const ONBOARDING_SCHEDULING_FAILURE_TITLE = i18n.translate(
     defaultMessage: 'Could not schedule a task to onboard stream',
   }
 );
+
+export const STREAM_LIST_VIEW_LABEL = i18n.translate(
+  'xpack.streams.significantEventsDiscovery.streamsView.streamListViewLabel',
+  {
+    defaultMessage: 'Stream list',
+  }
+);
+
+export const STREAM_MAP_VIEW_LABEL = i18n.translate(
+  'xpack.streams.significantEventsDiscovery.streamsView.streamMapViewLabel',
+  {
+    defaultMessage: 'Stream map',
+  }
+);
+
+export const STREAMS_MAP_ARIA_LABEL = i18n.translate(
+  'xpack.streams.significantEventsDiscovery.streamsView.streamsMapAriaLabel',
+  {
+    defaultMessage: 'Stream map showing parent-child relationships between streams',
+  }
+);
+
+export const STREAMS_MAP_EMPTY_MESSAGE = i18n.translate(
+  'xpack.streams.significantEventsDiscovery.streamsView.streamsMapEmptyMessage',
+  {
+    defaultMessage: 'No streams to display',
+  }
+);
