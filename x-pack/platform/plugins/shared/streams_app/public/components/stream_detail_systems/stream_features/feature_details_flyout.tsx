@@ -6,7 +6,9 @@
  */
 import {
   EuiBadge,
+  EuiButton,
   EuiButtonIcon,
+  EuiCallOut,
   EuiCodeBlock,
   EuiContextMenuItem,
   EuiContextMenuPanel,
@@ -40,6 +42,8 @@ interface FeatureDetailsFlyoutProps {
   onClose: () => void;
   onDelete?: () => Promise<void>;
   isDeleting?: boolean;
+  isStarred?: boolean;
+  onStarToggle?: () => void;
 }
 
 const noDataPlaceholder = '-';
@@ -49,6 +53,8 @@ export function FeatureDetailsFlyout({
   onClose,
   onDelete,
   isDeleting = false,
+  isStarred = false,
+  onStarToggle,
 }: FeatureDetailsFlyoutProps) {
   const { euiTheme } = useEuiTheme();
   const flyoutTitleId = useGeneratedHtmlId({
@@ -57,10 +63,26 @@ export function FeatureDetailsFlyout({
   const [isActionsPopoverOpen, { off: closeActionsPopover, toggle: toggleActionsPopover }] =
     useBoolean(false);
   const [isDeleteModalVisible, { on: showDeleteModal, off: hideDeleteModal }] = useBoolean(false);
+  const [isStarCalloutDismissed, { on: dismissStarCallout }] = useBoolean(false);
 
   const handleDeleteClick = () => {
     closeActionsPopover();
     showDeleteModal();
+  };
+
+  const handleStarClick = () => {
+    closeActionsPopover();
+    onStarToggle?.();
+  };
+
+  const handleDuplicateClick = () => {
+    closeActionsPopover();
+    // UI placeholder - no API call yet
+  };
+
+  const handleArchiveClick = () => {
+    closeActionsPopover();
+    // UI placeholder - no API call yet
   };
 
   const displayTitle = feature.title ?? feature.id;
@@ -147,7 +169,7 @@ export function FeatureDetailsFlyout({
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiFlexGroup gutterSize="xs" responsive={false}>
-              {onDelete && (
+              {(onDelete || onStarToggle) && (
                 <EuiFlexItem grow={false}>
                   <EuiPopover
                     button={
@@ -166,17 +188,55 @@ export function FeatureDetailsFlyout({
                     <EuiContextMenuPanel
                       size="s"
                       items={[
-                        <EuiContextMenuItem
-                          key="delete"
-                          icon={<EuiIcon type="trash" color="danger" />}
-                          css={css`
-                            color: ${euiTheme.colors.danger};
-                          `}
-                          onClick={handleDeleteClick}
-                          data-test-subj="streamsAppFeatureDetailsFlyoutDeleteAction"
-                        >
-                          {DELETE_ACTION_LABEL}
-                        </EuiContextMenuItem>,
+                        ...(onStarToggle
+                          ? [
+                              <EuiContextMenuItem
+                                key="star"
+                                icon={<EuiIcon type={isStarred ? 'starFilled' : 'starEmpty'} />}
+                                onClick={handleStarClick}
+                                data-test-subj="streamsAppFeatureDetailsFlyoutStarAction"
+                              >
+                                {isStarred
+                                  ? STAR_UNSTAR_ACTION_UNSTAR_LABEL
+                                  : STAR_UNSTAR_ACTION_STAR_LABEL}
+                              </EuiContextMenuItem>,
+                            ]
+                          : []),
+                        ...(onStarToggle
+                          ? [
+                              <EuiContextMenuItem
+                                key="duplicate"
+                                icon={<EuiIcon type="copy" />}
+                                onClick={handleDuplicateClick}
+                                data-test-subj="streamsAppFeatureDetailsFlyoutDuplicateAction"
+                              >
+                                {DUPLICATE_ACTION_LABEL}
+                              </EuiContextMenuItem>,
+                              <EuiContextMenuItem
+                                key="archive"
+                                icon={<EuiIcon type="archive" />}
+                                onClick={handleArchiveClick}
+                                data-test-subj="streamsAppFeatureDetailsFlyoutArchiveAction"
+                              >
+                                {ARCHIVE_ACTION_LABEL}
+                              </EuiContextMenuItem>,
+                            ]
+                          : []),
+                        ...(onDelete
+                          ? [
+                              <EuiContextMenuItem
+                                key="delete"
+                                icon={<EuiIcon type="trash" color="danger" />}
+                                css={css`
+                                  color: ${euiTheme.colors.danger};
+                                `}
+                                onClick={handleDeleteClick}
+                                data-test-subj="streamsAppFeatureDetailsFlyoutDeleteAction"
+                              >
+                                {DELETE_ACTION_LABEL}
+                              </EuiContextMenuItem>,
+                            ]
+                          : []),
                       ]}
                     />
                   </EuiPopover>
@@ -196,6 +256,31 @@ export function FeatureDetailsFlyout({
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiFlexGroup direction="column" gutterSize="m">
+          {onStarToggle && !isStarred && !isStarCalloutDismissed && (
+            <EuiFlexItem grow={false}>
+              <EuiCallOut
+                size="s"
+                announceOnMount
+                title={STAR_FEATURE_CALLOUT_TITLE}
+                iconType="starFilled"
+                onDismiss={dismissStarCallout}
+                data-test-subj="streamsAppFeatureDetailsFlyoutStarCallout"
+              >
+                <p>{STAR_FEATURE_CALLOUT_DESCRIPTION}</p>
+                <EuiButton
+                  size="s"
+                  fill
+                  onClick={() => {
+                    onStarToggle();
+                    dismissStarCallout();
+                  }}
+                  data-test-subj="streamsAppFeatureDetailsFlyoutStarCalloutButton"
+                >
+                  {STAR_FEATURE_CALLOUT_BUTTON}
+                </EuiButton>
+              </EuiCallOut>
+            </EuiFlexItem>
+          )}
           <EuiFlexItem>
             <InfoPanel title={GENERAL_INFORMATION_LABEL}>
               {generalInfoItems.map((item, index) => (
@@ -316,6 +401,44 @@ const ACTIONS_BUTTON_ARIA_LABEL = i18n.translate(
 const DELETE_ACTION_LABEL = i18n.translate('xpack.streams.featureDetailsFlyout.deleteAction', {
   defaultMessage: 'Delete',
 });
+
+const STAR_UNSTAR_ACTION_STAR_LABEL = i18n.translate(
+  'xpack.streams.featureDetailsFlyout.starAction',
+  { defaultMessage: 'Star' }
+);
+
+const STAR_UNSTAR_ACTION_UNSTAR_LABEL = i18n.translate(
+  'xpack.streams.featureDetailsFlyout.unstarAction',
+  { defaultMessage: 'Unstar' }
+);
+
+const DUPLICATE_ACTION_LABEL = i18n.translate(
+  'xpack.streams.featureDetailsFlyout.duplicateAction',
+  { defaultMessage: 'Duplicate' }
+);
+
+const ARCHIVE_ACTION_LABEL = i18n.translate(
+  'xpack.streams.featureDetailsFlyout.archiveAction',
+  { defaultMessage: 'Archive' }
+);
+
+const STAR_FEATURE_CALLOUT_TITLE = i18n.translate(
+  'xpack.streams.featureDetailsFlyout.starCalloutTitle',
+  { defaultMessage: 'Features can be starred' }
+);
+
+const STAR_FEATURE_CALLOUT_DESCRIPTION = i18n.translate(
+  'xpack.streams.featureDetailsFlyout.starCalloutDescription',
+  {
+    defaultMessage:
+      'By starring a feature, you keep it at the top of the list for quick access during your analysis.',
+  }
+);
+
+const STAR_FEATURE_CALLOUT_BUTTON = i18n.translate(
+  'xpack.streams.featureDetailsFlyout.starCalloutButton',
+  { defaultMessage: 'Star feature' }
+);
 
 const CLOSE_BUTTON_ARIA_LABEL = i18n.translate(
   'xpack.streams.featureDetailsFlyout.closeButtonAriaLabel',
