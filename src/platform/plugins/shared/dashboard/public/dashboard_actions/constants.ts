@@ -9,6 +9,7 @@
 
 export const DASHBOARD_ACTION_GROUP = { id: 'dashboard_actions', order: 10 } as const;
 
+export const ACTION_PANEL_INSIGHTS = 'ACTION_PANEL_INSIGHTS';
 export const ACTION_ADD_TO_LIBRARY = 'saveToLibrary';
 export const ACTION_CLONE_PANEL = 'clonePanel';
 export const ACTION_COPY_TO_DASHBOARD = 'copyToDashboard';

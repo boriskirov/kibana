@@ -18,6 +18,7 @@ import {
   CPS_USAGE_OVERRIDES_BADGE,
 } from './customize_panel_action/constants';
 import { ACTION_SHOW_CONFIG_PANEL } from './show_config_panel_action/constants';
+import { ACTION_PANEL_INSIGHTS } from './panel_insights_action/constants';
 
 export const registerActions = () => {
   uiActions.registerActionAsync(ACTION_REMOVE_PANEL, async () => {
@@ -61,4 +62,10 @@ export const registerActions = () => {
     return new ShowConfigPanelAction();
   });
   uiActions.attachAction(ON_OPEN_PANEL_MENU, ACTION_SHOW_CONFIG_PANEL);
+
+  uiActions.registerActionAsync(ACTION_PANEL_INSIGHTS, async () => {
+    const { PanelInsightsAction } = await import('./panel_insights_action/panel_insights_action');
+    return new PanelInsightsAction();
+  });
+  uiActions.attachAction(ON_OPEN_PANEL_MENU, ACTION_PANEL_INSIGHTS);
 };

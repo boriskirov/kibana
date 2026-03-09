@@ -8,6 +8,8 @@
  */
 
 import type { IconType } from '@elastic/eui';
+import type { EventAnnotationOutput } from '@kbn/event-annotation-plugin/common';
+import type { PointEventAnnotationRow } from '@kbn/event-annotation-plugin/common';
 import type { DataPublicPluginSetup } from '@kbn/data-plugin/public';
 import type { FieldFormatsSetup } from '@kbn/field-formats-plugin/public';
 import type { ChartsPluginSetup } from '@kbn/charts-plugin/public';
@@ -34,7 +36,19 @@ export interface StartDeps {
 
 export type StartServices = Pick<CoreStart, 'analytics' | 'i18n' | 'theme' | 'userProfile'>;
 
-export type ExpressionXyPluginSetup = void;
+/** Structure for injecting additional annotations into XY charts (e.g. insight markers) */
+export interface InjectedAnnotations {
+  rows: PointEventAnnotationRow[];
+  configs: EventAnnotationOutput[];
+}
+
+export interface ExpressionXyPluginSetup {
+  registerChartTooltipInsightsHandler: (
+    onOpen: () => void,
+    options?: { getCount?: () => number }
+  ) => void;
+  registerChartAnnotationOverrides: (getInjected: () => InjectedAnnotations) => void;
+}
 export type ExpressionXyPluginStart = void;
 
 export interface FilterEvent {

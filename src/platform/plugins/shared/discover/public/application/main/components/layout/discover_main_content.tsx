@@ -21,6 +21,7 @@ import { DocumentViewModeToggle } from '../../../../components/view_mode_toggle'
 import type { DiscoverStateContainer } from '../../state_management/discover_state';
 import { FieldStatisticsTab } from '../field_stats_table';
 import { DiscoverDocuments } from './discover_documents';
+import { DiscoverySummaryPanel } from '../../../../components/discovery_summary_panel';
 import { DOCUMENTS_VIEW_CLICK, FIELD_STATISTICS_VIEW_CLICK } from '../field_stats_table/constants';
 import { useAppStateSelector } from '../../state_management/redux';
 import type { PanelsToggleProps } from '../../../../components/panels_toggle';
@@ -165,13 +166,18 @@ export const DiscoverMainContent = ({
         >
           {showChart && isChartAvailable && <EuiHorizontalRule margin="none" />}
           {viewMode === VIEW_MODE.DOCUMENT_LEVEL ? (
-            <DiscoverDocuments
-              viewModeToggle={viewModeToggle}
-              dataView={dataView}
-              onAddFilter={onAddFilter}
-              stateContainer={stateContainer}
-              onFieldEdited={!isEsqlMode ? onFieldEdited : undefined}
-            />
+            <>
+              <EuiFlexItem grow={false}>
+                <DiscoverySummaryPanel initialIsOpen={true} />
+              </EuiFlexItem>
+              <DiscoverDocuments
+                viewModeToggle={viewModeToggle}
+                dataView={dataView}
+                onAddFilter={onAddFilter}
+                stateContainer={stateContainer}
+                onFieldEdited={!isEsqlMode ? onFieldEdited : undefined}
+              />
+            </>
           ) : null}
           {viewMode === VIEW_MODE.AGGREGATED_LEVEL ? (
             <>

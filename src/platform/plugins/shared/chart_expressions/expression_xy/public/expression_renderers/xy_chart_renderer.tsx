@@ -63,6 +63,12 @@ export interface GetStartDeps {
   usageCollection?: UsageCollectionStart;
   timeFormat: string;
   startServices: StartServices;
+  /** Optional handler to open insights flyout from chart tooltip (registered by presentation_panel) */
+  onOpenInsights?: () => void;
+  /** Optional function to get insight count for tooltip badge */
+  getInsightCount?: () => number;
+  /** Optional function to inject additional annotations when rendering in dashboard */
+  getInjectedAnnotations?: () => import('../types').InjectedAnnotations;
 }
 
 interface XyChartRendererDeps {
@@ -308,6 +314,9 @@ export const getXyChartRenderer = ({
             uiState={handlers.uiState as PersistedState}
             renderComplete={renderComplete}
             setChartSize={setChartSize}
+            onOpenInsights={deps.onOpenInsights}
+            getInsightCount={deps.getInsightCount}
+            getInjectedAnnotations={deps.getInjectedAnnotations}
           />
         </div>
       </KibanaRenderContextProvider>,

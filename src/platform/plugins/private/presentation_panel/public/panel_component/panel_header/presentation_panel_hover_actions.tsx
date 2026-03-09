@@ -38,6 +38,8 @@ import {
   ON_OPEN_PANEL_MENU,
   PANEL_NOTIFICATION_TRIGGER,
 } from '@kbn/ui-actions-plugin/common/trigger_ids';
+import { ACTION_PANEL_INSIGHTS } from '../../panel_actions/panel_insights_action/constants';
+import { InsightsIcon } from '../../panel_actions/panel_insights_action/insights_icon';
 import { uiActions } from '../../kibana_services';
 import type { AnyApiAction } from '../../panel_actions/types';
 import type { DefaultPresentationPanelApi, PresentationPanelInternalProps } from '../types';
@@ -317,9 +319,12 @@ export const PresentationPanelHoverActions = ({
         const name = action.getDisplayName(apiContext);
         const iconType = action.getIconType(apiContext) as IconType;
         const id = action.id;
+        const customIcon =
+          action.id === ACTION_PANEL_INSIGHTS ? <InsightsIcon /> : undefined;
 
         return {
           iconType,
+          customIcon,
           'data-test-subj': `embeddablePanelAction-${action.id}`,
           onClick: createClickHandler(action, apiContext),
           name,
@@ -465,15 +470,47 @@ export const PresentationPanelHoverActions = ({
               />
             )}
             {quickActionElements.map(
-              ({ iconType, 'data-test-subj': dataTestSubj, onClick, name }, i) => (
+              (
+                { iconType, customIcon, 'data-test-subj': dataTestSubj, onClick, name },
+                i
+              ) => (
                 <EuiToolTip key={`main_action_${dataTestSubj}_${api?.uuid}`} content={name}>
-                  <EuiButtonIcon
-                    iconType={iconType}
-                    color="text"
-                    onClick={onClick as MouseEventHandler}
-                    data-test-subj={dataTestSubj}
-                    aria-label={name as string}
-                  />
+                  {customIcon ? (
+                    <button
+                      type="button"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      onClick={onClick as MouseEventHandler}
+                      data-test-subj={dataTestSubj}
+                      aria-label={name as string}
+                      css={css`
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: ${euiTheme.size.l};
+                        height: ${euiTheme.size.l};
+                        padding: 0;
+                        border: none;
+                        background: transparent;
+                        color: ${euiTheme.colors.text};
+                        cursor: pointer;
+                        border-radius: ${euiTheme.border.radius.small};
+                        &:hover {
+                          background: ${euiTheme.colors.lightestShade};
+                          color: ${euiTheme.colors.text};
+                        }
+                      `}
+                    >
+                      {customIcon}
+                    </button>
+                  ) : (
+                    <EuiButtonIcon
+                      iconType={iconType}
+                      color="text"
+                      onClick={onClick as MouseEventHandler}
+                      data-test-subj={dataTestSubj}
+                      aria-label={name as string}
+                    />
+                  )}
                 </EuiToolTip>
               )
             )}

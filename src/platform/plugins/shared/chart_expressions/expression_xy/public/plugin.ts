@@ -14,7 +14,7 @@ import type { ChartsPluginStart } from '@kbn/charts-plugin/public';
 import type { CoreSetup, CoreStart, IUiSettingsClient } from '@kbn/core/public';
 import type { EventAnnotationPluginStart } from '@kbn/event-annotation-plugin/public';
 import type { UsageCollectionStart } from '@kbn/usage-collection-plugin/public';
-import type { ExpressionXyPluginSetup, ExpressionXyPluginStart, SetupDeps } from './types';
+import type { ExpressionXyPluginSetup, ExpressionXyPluginStart, InjectedAnnotations, SetupDeps } from './types';
 import {
   xyVisFunction,
   layeredXyVisFunction,
@@ -50,6 +50,28 @@ export function getTimeZone(uiSettings: IUiSettingsClient) {
 
   return configuredTimeZone;
 }
+
+/** Optional handler registered by e.g. presentation_panel to add an "Insight" action to chart tooltips */
+interface ChartTooltipInsightsHandler {
+  onOpen: () => void;
+  getCount?: () => number;
+}
+
+let chartTooltipInsightsHandler: ChartTooltipInsightsHandler | null = null;
+
+export const registerChartTooltipInsightsHandler = (
+  onOpen: () => void,
+  options?: { getCount?: () => number }
+) => {
+  chartTooltipInsightsHandler = { onOpen, getCount: options?.getCount };
+};
+
+/** Optional handler to inject additional annotations (e.g. insights) into XY charts in dashboards */
+let chartAnnotationOverridesHandler: (() => InjectedAnnotations) | null = null;
+
+export const registerChartAnnotationOverrides = (getInjected: () => InjectedAnnotations) => {
+  chartAnnotationOverridesHandler = getInjected;
+};
 
 export class ExpressionXyPlugin {
   public setup(
@@ -98,10 +120,18 @@ export class ExpressionXyPlugin {
         timeZone: getTimeZone(core.uiSettings),
         timeFormat: core.uiSettings.get('dateFormat'),
         startServices: coreStart,
+        onOpenInsights: chartTooltipInsightsHandler?.onOpen,
+        getInsightCount: chartTooltipInsightsHandler?.getCount,
+        getInjectedAnnotations: chartAnnotationOverridesHandler ?? undefined,
       } satisfies GetStartDeps;
     };
 
     expressions.registerRenderer(getXyChartRenderer({ getStartDeps }));
+
+    return {
+      registerChartTooltipInsightsHandler,
+      registerChartAnnotationOverrides,
+    };
   }
 
   public start(_core: CoreStart): ExpressionXyPluginStart {}

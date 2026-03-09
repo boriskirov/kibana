@@ -33,8 +33,14 @@ import type { Datatable, DatatableColumn, DatatableRow } from '@kbn/expressions-
 import { FormattedMessage } from '@kbn/i18n-react';
 import { css } from '@emotion/react';
 import type { MergedAnnotation } from '../../common';
-import { AnnotationIcon, hasIcon, Marker, MarkerBody } from '../helpers';
-import { mapVerticalToHorizontalPlacement, LINES_MARKER_SIZE } from '../helpers';
+import {
+  AnnotationIcon,
+  hasIcon,
+  Marker,
+  MarkerBody,
+  mapVerticalToHorizontalPlacement,
+  LINES_MARKER_SIZE,
+} from '../helpers';
 
 export interface AnnotationsProps {
   groupedLineAnnotations: MergedAnnotation[];
@@ -288,6 +294,7 @@ export const Annotations = ({
           <LineAnnotation
             id={id}
             key={id}
+            groupId="bottom"
             domainType={AnnotationDomainType.XDomain}
             marker={
               !simpleView ? (

@@ -203,6 +203,7 @@ export function createDiscoverServicesMock(): DiscoverServices {
     dataVisualizer: {
       FieldStatisticsTable: jest.fn(() => createElement('div')),
     },
+    agentBuilder: undefined,
     aiops: {
       getPatternAnalysisAvailable: jest.fn().mockResolvedValue(jest.fn(() => true)),
       PatternAnalysisComponent: jest.fn(() => createElement('div')),

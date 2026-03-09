@@ -164,6 +164,34 @@ describe('Presentation panel', () => {
         screen.queryByTestId('embeddablePanelNotification-testAction')
       ).not.toBeInTheDocument();
     });
+
+    it('shows Insights action in context menu when provided via getActions', async () => {
+      const { PanelInsightsAction } = await import(
+        '../panel_actions/panel_insights_action/panel_insights_action'
+      );
+      const apiWithType = {
+        uuid: 'test',
+        type: 'lens',
+        title$: new BehaviorSubject<string | undefined>('Chart'),
+      };
+      const insightsAction = new PanelInsightsAction();
+      const getActions = jest.fn().mockImplementation(async (triggerId: string) => {
+        if (triggerId === ON_OPEN_PANEL_MENU) {
+          return [insightsAction];
+        }
+        return [];
+      });
+      await renderPresentationPanel({ api: apiWithType, props: { getActions } });
+      await userEvent.click(screen.getByTestId('embeddablePanelToggleMenuIcon'));
+      await waitForEuiPopoverOpen();
+      await waitFor(() => {
+        expect(screen.getByTestId('presentationPanelContextMenuItems')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('embeddablePanelAction-ACTION_PANEL_INSIGHTS')
+        ).toBeInTheDocument();
+        expect(screen.getByText('Insights')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('titles', () => {

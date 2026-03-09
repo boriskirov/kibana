@@ -58,6 +58,7 @@ import type { ObservabilityAIAssistantPublicStart } from '@kbn/observability-ai-
 import type { ContentManagementPublicStart } from '@kbn/content-management-plugin/public';
 import { noop } from 'lodash';
 import type { NoDataPagePluginStart } from '@kbn/no-data-page-plugin/public';
+import type { AgentBuilderPluginStart } from '@kbn/agent-builder-plugin/public';
 import type { AiopsPluginStart } from '@kbn/aiops-plugin/public';
 import type { DataVisualizerPluginStart } from '@kbn/data-visualizer-plugin/public';
 import type { FieldsMetadataPublicStart } from '@kbn/fields-metadata-plugin/public';
@@ -95,6 +96,7 @@ export interface DiscoverFeatureFlags {
 }
 
 export interface DiscoverServices {
+  agentBuilder?: AgentBuilderPluginStart;
   aiops?: AiopsPluginStart;
   application: ApplicationStart;
   addBasePath: (path: string) => string;
@@ -189,6 +191,7 @@ export const buildServices = ({
   const storage = new Storage(localStorage);
 
   return {
+    agentBuilder: plugins.agentBuilder,
     aiops: plugins.aiops,
     application: core.application,
     addBasePath: core.http.basePath.prepend,

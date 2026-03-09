@@ -76,6 +76,7 @@ import type {
   XYChartProps,
   AxisExtentConfigResult,
 } from '../../common/types';
+import type { InjectedAnnotations } from '../../types';
 import type { AxisConfiguration, GroupsConfiguration, Series } from '../helpers';
 import {
   isHorizontalChart,
@@ -155,6 +156,12 @@ export type XYChartRenderProps = Omit<XYChartProps, 'canNavigateToLens'> & {
   timeFormat: string;
   setChartSize: (chartSizeSpec: ChartSizeSpec) => void;
   shouldShowLegendAction?: (actionId: string) => boolean;
+  /** Optional handler to open insights flyout from tooltip (registered by presentation_panel) */
+  onOpenInsights?: () => void;
+  /** Optional function to get insight count for tooltip badge */
+  getInsightCount?: () => number;
+  /** Optional function to inject additional annotations (e.g. insights) when rendering in dashboard */
+  getInjectedAnnotations?: () => InjectedAnnotations;
 };
 
 function nonNullable<T>(v: T): v is NonNullable<T> {
@@ -218,6 +225,9 @@ export function XYChart({
   uiState,
   timeFormat,
   overrides,
+  onOpenInsights,
+  getInsightCount,
+  getInjectedAnnotations,
 }: XYChartRenderProps) {
   const {
     legend,
@@ -443,14 +453,35 @@ export function XYChart({
   };
 
   const referenceLineLayers = getReferenceLayers(layers);
+  const mergedAnnotations = useMemo(() => {
+    const injected =
+      isTimeViz && getInjectedAnnotations ? getInjectedAnnotations() : undefined;
+    if (!injected?.rows.length) {
+      return annotations;
+    }
+    const baseRows = annotations?.datatable?.rows ?? [];
+    const baseLayers = annotations?.layers ?? [];
+    const baseColumns = annotations?.datatable?.columns ?? [];
+    return {
+      datatable: {
+        rows: [...baseRows, ...injected.rows],
+        columns: baseColumns,
+      },
+      layers: [
+        ...baseLayers,
+        { layerId: '__injected__', annotations: injected.configs, simpleView: false },
+      ],
+    };
+  }, [annotations, isTimeViz, getInjectedAnnotations]);
+
   const [rangeAnnotations, lineAnnotations] = isTimeViz
-    ? partition(annotations?.datatable.rows, isRangeAnnotation)
+    ? partition(mergedAnnotations?.datatable.rows, isRangeAnnotation)
     : [[], []];
 
   const groupedLineAnnotations = getAnnotationsGroupedByInterval(
     lineAnnotations as PointEventAnnotationRow[],
-    annotations?.layers.flatMap((l) => l.annotations),
-    annotations?.datatable.columns,
+    mergedAnnotations?.layers.flatMap((l) => l.annotations),
+    mergedAnnotations?.datatable.columns,
     formatFactory,
     timeFormat
   );
@@ -471,8 +502,8 @@ export function XYChart({
   ].filter(nonNullable);
 
   const shouldHideDetails =
-    annotations?.layers && annotations.layers.length > 0
-      ? annotations?.layers[0].simpleView
+    mergedAnnotations?.layers && mergedAnnotations.layers.length > 0
+      ? mergedAnnotations.layers[0].simpleView
       : false;
   const linesPaddings = !shouldHideDetails
     ? getLinesCausedPaddings(visualConfigs, yAxesMap, shouldRotate)
@@ -805,7 +836,9 @@ export function XYChart({
                 formatFactory,
                 isEsqlMode,
                 canCreateAlerts,
-                interactive && !args.detailedTooltip
+                interactive && !args.detailedTooltip,
+                onOpenInsights,
+                getInsightCount
               )}
               customTooltip={
                 args.detailedTooltip

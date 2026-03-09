@@ -81,6 +81,7 @@
     "@kbn/shared-ux-markdown",
     "@kbn/data-view-utils",
     "@kbn/presentation-publishing",
+    "@kbn/agent-builder-plugin",
     "@kbn/aiops-log-pattern-analysis",
     "@kbn/field-types",
     "@kbn/elastic-agent-utils",

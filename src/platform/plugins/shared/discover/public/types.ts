@@ -43,6 +43,7 @@ import type { DataVisualizerPluginStart } from '@kbn/data-visualizer-plugin/publ
 import type { FieldsMetadataPublicStart } from '@kbn/fields-metadata-plugin/public';
 import type { LogsDataAccessPluginStart } from '@kbn/logs-data-access-plugin/public';
 import type { DiscoverSharedPublicStart } from '@kbn/discover-shared-plugin/public';
+import type { AgentBuilderPluginStart } from '@kbn/agent-builder-plugin/public';
 import type { ApmSourceAccessPluginStart } from '@kbn/apm-sources-access-plugin/public';
 import type { Setup as InspectorPublicPluginSetup } from '@kbn/inspector-plugin/public/plugin';
 import type { FileUploadPluginStart } from '@kbn/file-upload-plugin/public';
@@ -148,6 +149,7 @@ export interface DiscoverSetupPlugins {
  * @internal
  */
 export interface DiscoverStartPlugins {
+  agentBuilder?: AgentBuilderPluginStart;
   aiops?: AiopsPluginStart;
   charts: ChartsPluginStart;
   contentManagement: ContentManagementPublicStart;

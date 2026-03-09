@@ -17,4 +17,8 @@ export function plugin() {
 
 export { LayerTypes, XYCurveTypes, FittingFunctions, PointVisibilityOptions } from '../common';
 
-export type { ExpressionXyPluginSetup, ExpressionXyPluginStart } from './types';
+export type {
+  ExpressionXyPluginSetup,
+  ExpressionXyPluginStart,
+  InjectedAnnotations,
+} from './types';
