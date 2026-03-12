@@ -379,7 +379,7 @@ export function OverviewTab() {
               <EuiStat
                 title={featuresCount}
                 description={i18n.translate('xpack.streams.overview.totalFeatures', {
-                  defaultMessage: 'Features',
+                  defaultMessage: 'Knowledge Indicators',
                 })}
                 titleColor="subdued"
               />
@@ -390,7 +390,7 @@ export function OverviewTab() {
               <EuiStat
                 title={queriesCount}
                 description={i18n.translate('xpack.streams.overview.totalQueries', {
-                  defaultMessage: 'Queries',
+                  defaultMessage: 'Rules',
                 })}
                 titleColor="subdued"
               />

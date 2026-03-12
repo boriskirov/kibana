@@ -8,8 +8,10 @@ import { i18n } from '@kbn/i18n';
 import { Streams } from '@kbn/streams-schema';
 import React from 'react';
 import { useStreamsPrivileges } from '../../../hooks/use_streams_privileges';
+import { useAIFeatures } from '../../../hooks/use_ai_features';
 import { StreamDetailSignificantEventsView } from '../../stream_detail_significant_events_view';
 import { StreamDetailEnrichment } from '../stream_detail_enrichment';
+import { StreamDiscoveryConfiguration } from '../../stream_detail_systems/stream_discovery_configuration';
 
 export function useStreamsDetailManagementTabs({
   definition,
@@ -22,6 +24,7 @@ export function useStreamsDetailManagementTabs({
     features: { significantEvents },
     isLoading,
   } = useStreamsPrivileges();
+  const aiFeatures = useAIFeatures();
 
   const isSignificantEventsEnabled = !!significantEvents?.enabled;
   const isProcessingEnabled = Streams.ingest.all.GetResponse.is(definition);
@@ -40,10 +43,21 @@ export function useStreamsDetailManagementTabs({
     }),
     ...(isSignificantEventsEnabled
       ? {
+          knowledgeIndicators: {
+            content: (
+              <StreamDiscoveryConfiguration
+                definition={definition.stream}
+                aiFeatures={aiFeatures}
+              />
+            ),
+            label: i18n.translate('xpack.streams.streamDetailView.knowledgeIndicatorsTab', {
+              defaultMessage: 'Knowledge indicators',
+            }),
+          },
           significantEvents: {
             content: <StreamDetailSignificantEventsView definition={definition} />,
             label: i18n.translate('xpack.streams.streamDetailView.significantEventsTab', {
-              defaultMessage: 'Significant events',
+              defaultMessage: 'Rules',
             }),
           },
         }

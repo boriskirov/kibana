@@ -165,7 +165,7 @@ describe('Presentation panel', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('shows Insights action in context menu when provided via getActions', async () => {
+    it('shows Significant events action in context menu when provided via getActions', async () => {
       const { PanelInsightsAction } = await import(
         '../panel_actions/panel_insights_action/panel_insights_action'
       );
@@ -189,7 +189,7 @@ describe('Presentation panel', () => {
         expect(
           screen.getByTestId('embeddablePanelAction-ACTION_PANEL_INSIGHTS')
         ).toBeInTheDocument();
-        expect(screen.getByText('Insights')).toBeInTheDocument();
+        expect(screen.getByText('Significant events')).toBeInTheDocument();
       });
     });
   });

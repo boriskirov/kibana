@@ -28,6 +28,7 @@ const classicStreamManagementSubTabs = [
   'dataQuality',
   'retention',
   'significantEvents',
+  'knowledgeIndicators',
   'schemaEditor',
   'schema',
   'attachments',
@@ -170,6 +171,10 @@ export function ClassicStreamDetailManagement({
 
   if (otherTabs.significantEvents) {
     tabs.significantEvents = otherTabs.significantEvents;
+  }
+
+  if (otherTabs.knowledgeIndicators) {
+    tabs.knowledgeIndicators = otherTabs.knowledgeIndicators;
   }
 
   if (definition.privileges.manage) {

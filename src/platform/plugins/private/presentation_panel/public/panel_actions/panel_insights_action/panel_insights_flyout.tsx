@@ -57,7 +57,7 @@ export function PanelInsightsFlyout({ onClose, panelTitle }: PanelInsightsFlyout
               })}
             >
               {i18n.translate('presentationPanel.panelInsights.forPanel', {
-                defaultMessage: 'Discoveries for "{panelTitle}"',
+                defaultMessage: 'Significant events for "{panelTitle}"',
                 values: { panelTitle },
               })}
             </span>

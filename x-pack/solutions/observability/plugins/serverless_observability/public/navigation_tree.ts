@@ -96,6 +96,12 @@ export const createNavigationTree = ({
         },
         streamsAvailable
       ),
+      ...filterForFeatureAvailability(
+        {
+          link: 'streams:significant_events' as const,
+        },
+        streamsAvailable
+      ),
       {
         id: 'applications',
         title: i18n.translate('xpack.serverlessObservability.nav.applications', {

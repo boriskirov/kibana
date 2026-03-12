@@ -5,7 +5,15 @@
  * 2.0.
  */
 
-import { EuiBadge, EuiFlexGroup, EuiFlexItem, EuiLoadingElastic, useEuiTheme } from '@elastic/eui';
+import {
+  EuiBadge,
+  EuiButton,
+  EuiButtonEmpty,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiLoadingElastic,
+  useEuiTheme,
+} from '@elastic/eui';
 import { css } from '@emotion/react';
 import { i18n } from '@kbn/i18n';
 import React from 'react';
@@ -26,8 +34,27 @@ import { TopologyTab } from './components/topology/topology_tab';
 import { SettingsPage } from './components/settings/settings_page';
 import { OverviewTab } from './components/overview/overview_tab';
 
-const discoveryTabs = ['overview', 'streams', 'features', 'queries', 'discoveries', 'suggestions', 'topology', 'settings'] as const;
+const discoveryTabs = [
+  'overview',
+  'streams',
+  'features',
+  'queries',
+  'discoveries',
+  'suggestions',
+  'topology',
+  'settings',
+] as const;
 type DiscoveryTab = (typeof discoveryTabs)[number];
+
+const CONFIGURE_TABS: DiscoveryTab[] = [
+  'streams',
+  'features',
+  'queries',
+  'discoveries',
+  'suggestions',
+  'topology',
+  'settings',
+];
 
 function isValidDiscoveryTab(value: string): value is DiscoveryTab {
   return discoveryTabs.includes(value as DiscoveryTab);
@@ -50,7 +77,7 @@ export function SignificantEventsDiscoveryPage() {
     return [
       {
         title: i18n.translate('xpack.streams.significantEventsDiscovery.breadcrumbTitle', {
-          defaultMessage: 'Significant events Discovery',
+          defaultMessage: 'Significant events',
         }),
         path: '/_discovery',
       },
@@ -58,7 +85,6 @@ export function SignificantEventsDiscoveryPage() {
   }, []);
 
   if (significantEventsDiscovery === undefined) {
-    // Waiting to load license
     return <EuiLoadingElastic size="xxl" />;
   }
 
@@ -70,15 +96,11 @@ export function SignificantEventsDiscoveryPage() {
     return <RedirectTo path="/_discovery/{tab}" params={{ path: { tab: 'overview' } }} />;
   }
 
-  const tabs = [
-    {
-      id: 'overview',
-      label: i18n.translate('xpack.streams.significantEventsDiscovery.overviewTab', {
-        defaultMessage: 'Overview',
-      }),
-      href: router.link('/_discovery/{tab}', { path: { tab: 'overview' } }),
-      isSelected: tab === 'overview',
-    },
+  const isOverview = tab === 'overview';
+  const overviewHref = router.link('/_discovery/{tab}', { path: { tab: 'overview' } });
+  const firstConfigureHref = router.link('/_discovery/{tab}', { path: { tab: 'streams' } });
+
+  const configureTabs = [
     {
       id: 'streams',
       label: i18n.translate('xpack.streams.significantEventsDiscovery.streamsTab', {
@@ -90,7 +112,7 @@ export function SignificantEventsDiscoveryPage() {
     {
       id: 'features',
       label: i18n.translate('xpack.streams.significantEventsDiscovery.featuresTab', {
-        defaultMessage: 'Features',
+        defaultMessage: 'Knowledge Indicators',
       }),
       href: router.link('/_discovery/{tab}', { path: { tab: 'features' } }),
       isSelected: tab === 'features',
@@ -101,7 +123,7 @@ export function SignificantEventsDiscoveryPage() {
         <EuiFlexGroup alignItems="center" gutterSize="xs" responsive={false} wrap={false}>
           <EuiFlexItem grow={false}>
             {i18n.translate('xpack.streams.significantEventsDiscovery.queriesTab', {
-              defaultMessage: 'Queries',
+              defaultMessage: 'Rules',
             })}
           </EuiFlexItem>
           {unbackedQueriesCount > 0 && (
@@ -162,27 +184,77 @@ export function SignificantEventsDiscoveryPage() {
             responsive={false}
             alignItems="center"
           >
-            <EuiFlexItem>
-              <EuiFlexGroup alignItems="center" gutterSize="m">
-                {i18n.translate('xpack.streams.significantEventsDiscovery.pageHeaderTitle', {
-                  defaultMessage: 'Significant Events Discovery',
-                })}
+            <EuiFlexItem grow={false}>
+              <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+                {!isOverview && (
+                  <EuiFlexItem grow={false}>
+                    <EuiButtonEmpty
+                      iconType="arrowLeft"
+                      size="xs"
+                      href={overviewHref}
+                      flush="left"
+                    />
+                  </EuiFlexItem>
+                )}
+                <EuiFlexItem grow={false}>
+                  {i18n.translate('xpack.streams.significantEventsDiscovery.pageHeaderTitle', {
+                    defaultMessage: 'Significant events',
+                  })}
+                </EuiFlexItem>
               </EuiFlexGroup>
             </EuiFlexItem>
-            <FeedbackButton />
+            <EuiFlexItem grow={false}>
+              <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+                {isOverview && (
+                  <>
+                    <EuiFlexItem grow={false}>
+                      <EuiButton
+                        iconType="play"
+                        size="s"
+                      >
+                        {i18n.translate(
+                          'xpack.streams.significantEventsDiscovery.runDiscoveryButton',
+                          { defaultMessage: 'Run a Discovery' }
+                        )}
+                      </EuiButton>
+                    </EuiFlexItem>
+                    <EuiFlexItem grow={false}>
+                      <EuiButtonEmpty
+                        iconType="gear"
+                        size="s"
+                        color="text"
+                        href={firstConfigureHref}
+                      >
+                        {i18n.translate(
+                          'xpack.streams.significantEventsDiscovery.settingsButton',
+                          { defaultMessage: 'Settings' }
+                        )}
+                      </EuiButtonEmpty>
+                    </EuiFlexItem>
+                  </>
+                )}
+                <EuiFlexItem grow={false}>
+                  <FeedbackButton />
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFlexItem>
           </EuiFlexGroup>
         }
-        tabs={tabs}
+        tabs={isOverview ? undefined : configureTabs}
       />
       <StreamsAppPageTemplate.Body grow>
-        {tab === 'overview' && <OverviewTab />}
-        {tab === 'streams' && <StreamsView refreshUnbackedQueriesCount={refetch} />}
-        {tab === 'features' && <FeaturesTable />}
-        {tab === 'queries' && <QueriesTable />}
-        {tab === 'discoveries' && <DiscoveriesTab />}
-        {tab === 'suggestions' && <SuggestionsTab />}
-        {tab === 'topology' && <TopologyTab />}
-        {tab === 'settings' && <SettingsPage />}
+        {isOverview && <OverviewTab />}
+        {CONFIGURE_TABS.includes(tab as DiscoveryTab) && (
+          <>
+            {tab === 'streams' && <StreamsView refreshUnbackedQueriesCount={refetch} />}
+            {tab === 'features' && <FeaturesTable />}
+            {tab === 'queries' && <QueriesTable />}
+            {tab === 'discoveries' && <DiscoveriesTab />}
+            {tab === 'suggestions' && <SuggestionsTab />}
+            {tab === 'topology' && <TopologyTab />}
+            {tab === 'settings' && <SettingsPage />}
+          </>
+        )}
       </StreamsAppPageTemplate.Body>
     </>
   );

@@ -29,6 +29,11 @@ import type {
   StreamsAppSetupDependencies,
   StreamsAppStartDependencies,
 } from './types';
+import {
+  SIGNIFICANT_EVENTS_NAV_ICON_URL,
+  SIGNIFICANT_EVENTS_NAV_ICON_ACTIVE_URL,
+} from './significant_events_nav_icon';
+import { setupSignificantEventsNavAnimation } from './significant_events_nav_animation';
 import type { StreamsAppServices } from './services/types';
 import {
   createDiscoverFlyoutStreamFieldLink,
@@ -122,6 +127,17 @@ export class StreamsAppPlugin
 
                 return {
                   visibleIn: ['sideNav', 'globalSearch'],
+                  deepLinks: [
+                    {
+                      id: 'significant_events',
+                      title: i18n.translate('xpack.streams.significantEvents.navLabel', {
+                        defaultMessage: 'Significant events',
+                      }),
+                      path: '/_discovery/overview',
+                      euiIconType: SIGNIFICANT_EVENTS_NAV_ICON_URL,
+                      visibleIn: ['sideNav', 'globalSearch'],
+                    },
+                  ],
                 };
               };
             })
@@ -159,6 +175,10 @@ export class StreamsAppPlugin
   }
 
   start(_coreStart: CoreStart, pluginsStart: StreamsAppStartDependencies): StreamsAppPublicStart {
+    setupSignificantEventsNavAnimation(
+      SIGNIFICANT_EVENTS_NAV_ICON_URL,
+      SIGNIFICANT_EVENTS_NAV_ICON_ACTIVE_URL
+    );
     const locator = pluginsStart.share.url.locators.create(new StreamsAppLocatorDefinition());
     pluginsStart.streams.navigationStatus$.subscribe((status) => {
       if (status.status !== 'enabled') return;

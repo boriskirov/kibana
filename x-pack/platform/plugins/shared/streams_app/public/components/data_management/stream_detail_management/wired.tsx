@@ -29,6 +29,7 @@ const wiredStreamManagementSubTabs = [
   'retention',
   'advanced',
   'significantEvents',
+  'knowledgeIndicators',
   'dataQuality',
   'attachments',
 ] as const;

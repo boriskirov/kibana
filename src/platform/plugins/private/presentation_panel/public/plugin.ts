@@ -114,7 +114,7 @@ export class PresentationPanelPlugin
           }),
           {
             title: i18n.translate('presentationPanel.panelInsights.allDiscoveriesTitle', {
-              defaultMessage: 'All discoveries',
+              defaultMessage: 'All significant events',
             }),
             size: 's',
             type: 'push',

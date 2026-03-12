@@ -243,7 +243,7 @@ const CONFIDENCE_COLUMN_HEADER_LABEL = i18n.translate(
 );
 
 export const FEATURES_LABEL = i18n.translate('xpack.streams.streamFeaturesTable.tableTitle', {
-  defaultMessage: 'Features',
+  defaultMessage: 'Knowledge indicators',
 });
 
 export const TABLE_CAPTION_LABEL = i18n.translate(

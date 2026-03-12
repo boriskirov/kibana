@@ -1158,7 +1158,6 @@ export function InsightCard({ insight, onOpenDetails, onStartChat }: InsightCard
       hasBorder={false}
       css={css`
         padding: 12px;
-        min-height: ${CARD_MIN_HEIGHT}px;
         background: #ffffff !important;
         border: 1px solid ${euiTheme.border.color};
         border-radius: 4px;
@@ -1195,17 +1194,6 @@ export function InsightCard({ insight, onOpenDetails, onStartChat }: InsightCard
               </EuiBadge>
             </EuiFlexGroup>
           </EuiFlexItem>
-          <EuiFlexItem grow={false}>
-            <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
-              <EuiText size="xs" color="subdued">
-                {i18n.translate('presentationPanel.panelInsights.significantEvents', {
-                  defaultMessage: 'Significant events {count}',
-                  values: { count: insight.significantEventsCount },
-                })}
-              </EuiText>
-              <SeverityDots colors={[1, 2, 3].map(() => SEVERITY_DOT_COLORS[config.dots])} />
-            </EuiFlexGroup>
-          </EuiFlexItem>
         </EuiFlexGroup>
 
         <EuiText size="s" textAlign="left">
@@ -1215,10 +1203,6 @@ export function InsightCard({ insight, onOpenDetails, onStartChat }: InsightCard
         <EuiText size="xs" color="subdued" textAlign="left">
           {truncateDescription(insight.description, DESCRIPTION_MAX_LENGTH)}
         </EuiText>
-
-        <EuiFlexItem grow={false} css={css({ alignSelf: 'flex-start' })}>
-          <EuiBadge color="hollow">{insight.streamTag}</EuiBadge>
-        </EuiFlexItem>
 
         {insight.actions && insight.actions.length > 0 && (
           <>

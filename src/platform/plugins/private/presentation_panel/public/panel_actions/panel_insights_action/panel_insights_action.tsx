@@ -29,7 +29,7 @@ export class PanelInsightsAction implements Action<EmbeddableApiContext> {
 
   public getDisplayName() {
     return i18n.translate('presentationPanel.panelInsights.actionDisplayName', {
-      defaultMessage: 'Discoveries',
+      defaultMessage: 'Significant events',
     });
   }
 
@@ -64,7 +64,7 @@ export class PanelInsightsAction implements Action<EmbeddableApiContext> {
       <PanelInsightsFlyout panelTitle={panelTitle} onClose={() => flyoutRef?.close()} />,
       {
         title: i18n.translate('presentationPanel.panelInsights.allDiscoveriesTitle', {
-          defaultMessage: 'All discoveries',
+          defaultMessage: 'All significant events',
         }),
         size: 's',
         type: 'push',

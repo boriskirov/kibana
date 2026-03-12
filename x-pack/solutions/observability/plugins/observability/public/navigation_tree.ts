@@ -100,6 +100,9 @@ function createNavTree({
               link: 'streams' as const,
               icon: 'productStreamsWired',
             },
+            {
+              link: 'streams:significant_events' as const,
+            },
           ]
         : []),
       {

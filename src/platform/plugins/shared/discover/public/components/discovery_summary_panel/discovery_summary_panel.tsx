@@ -1939,7 +1939,6 @@ function InsightCard({ insight, onOpenDetails }: InsightCardProps) {
       hasBorder={false}
       css={css`
         padding: 12px;
-        min-height: ${CARD_MIN_HEIGHT}px;
         background: #ffffff !important;
         border: 1px solid ${euiTheme.border.color};
         border-radius: 4px;
@@ -1977,17 +1976,6 @@ function InsightCard({ insight, onOpenDetails }: InsightCardProps) {
               </EuiBadge>
             </EuiFlexGroup>
           </EuiFlexItem>
-          <EuiFlexItem grow={false}>
-            <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
-              <EuiText size="xs" color="subdued">
-                {i18n.translate('discover.discoverySummary.significantEvents', {
-                  defaultMessage: 'Significant events {count}',
-                  values: { count: insight.significantEventsCount },
-                })}
-              </EuiText>
-              <SeverityDots colors={[1, 2, 3].map(() => SEVERITY_DOT_COLORS[config.dots])} />
-            </EuiFlexGroup>
-          </EuiFlexItem>
         </EuiFlexGroup>
 
         {/* Title and description - left aligned */}
@@ -1998,10 +1986,6 @@ function InsightCard({ insight, onOpenDetails }: InsightCardProps) {
         <EuiText size="xs" color="subdued" textAlign="left">
           {truncateDescription(insight.description, DESCRIPTION_MAX_LENGTH)}
         </EuiText>
-
-        <EuiFlexItem grow={false} css={css({ alignSelf: 'flex-start' })}>
-          <EuiBadge color="hollow">{insight.streamTag}</EuiBadge>
-        </EuiFlexItem>
 
         {/* Actions - new row with separator above */}
         {insight.actions && insight.actions.length > 0 && (
@@ -2091,7 +2075,7 @@ export function DiscoverySummaryPanel({
     <EuiText size="xs">
       <strong>
         {i18n.translate('discover.discoverySummary.title', {
-          defaultMessage: 'Discovery summary',
+          defaultMessage: 'Significant events',
         })}
       </strong>
     </EuiText>
@@ -2106,7 +2090,7 @@ export function DiscoverySummaryPanel({
           <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
             <EuiText size="xs" color="subdued">
               {i18n.translate('discover.discoverySummary.insights', {
-                defaultMessage: 'Insights',
+                defaultMessage: 'Significant events',
               })}
             </EuiText>
             <EuiBadge
@@ -2257,7 +2241,7 @@ export function DiscoverySummaryPanel({
             session="start"
             flyoutMenuProps={{
               title: i18n.translate('discover.discoverySummary.flyoutTitle', {
-                defaultMessage: 'All insights',
+                defaultMessage: 'All significant events',
               }),
             }}
             onClose={closeFlyout}
@@ -2269,7 +2253,7 @@ export function DiscoverySummaryPanel({
               <EuiTitle size="m">
                 <h2 id="discoverySummaryFlyoutTitle">
                   {i18n.translate('discover.discoverySummary.flyoutTitle', {
-                    defaultMessage: 'All insights',
+                    defaultMessage: 'All significant events',
                   })}
                 </h2>
               </EuiTitle>
