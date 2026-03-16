@@ -14,7 +14,9 @@ import { StreamsAppRouterBreadcrumb } from '../components/streams_app_router_bre
 import { RedirectTo } from '../components/redirect_to';
 import { StreamListView } from '../components/stream_list_view';
 import { StreamDetailRoot } from '../components/stream_root';
+import { StreamDetailLayout } from '../components/data_management/stream_detail_layout';
 import { StreamDetailManagement } from '../components/data_management/stream_detail_management';
+import { StreamDetailSignificantEventsPage } from '../components/data_management/stream_detail_significant_events_page';
 import { SignificantEventsDiscoveryPage } from '../components/significant_events_discovery/page';
 
 /**
@@ -91,7 +93,9 @@ const streamsAppRoutes = {
       '/{key}': {
         element: (
           <StreamDetailRoot>
-            <Outlet />
+            <StreamDetailLayout>
+              <Outlet />
+            </StreamDetailLayout>
           </StreamDetailRoot>
         ),
         params: t.intersection([
@@ -109,6 +113,12 @@ const streamsAppRoutes = {
             element: (
               <RedirectTo path="/{key}/management/{tab}" params={{ path: { tab: 'retention' } }} />
             ),
+          },
+          '/{key}/significant-events': {
+            element: <StreamDetailSignificantEventsPage />,
+            params: t.partial({
+              query: timeRangeQueryParams,
+            }),
           },
           /**
            * This route redirects from legacy overview/dashboard links to the management page

@@ -197,9 +197,15 @@ export function SignificantEventsDiscoveryPage() {
                   </EuiFlexItem>
                 )}
                 <EuiFlexItem grow={false}>
-                  {i18n.translate('xpack.streams.significantEventsDiscovery.pageHeaderTitle', {
-                    defaultMessage: 'Significant events',
-                  })}
+                  {tab === 'streams'
+                    ? i18n.translate(
+                        'xpack.streams.significantEventsDiscovery.streamsPageHeaderTitle',
+                        { defaultMessage: 'Advanced settings' }
+                      )
+                    : i18n.translate(
+                        'xpack.streams.significantEventsDiscovery.pageHeaderTitle',
+                        { defaultMessage: 'Significant events' }
+                      )}
                 </EuiFlexItem>
               </EuiFlexGroup>
             </EuiFlexItem>
@@ -209,12 +215,12 @@ export function SignificantEventsDiscoveryPage() {
                   <>
                     <EuiFlexItem grow={false}>
                       <EuiButton
-                        iconType="play"
+                        iconType="pause"
                         size="s"
                       >
                         {i18n.translate(
                           'xpack.streams.significantEventsDiscovery.runDiscoveryButton',
-                          { defaultMessage: 'Run a Discovery' }
+                          { defaultMessage: 'Listening for events' }
                         )}
                       </EuiButton>
                     </EuiFlexItem>

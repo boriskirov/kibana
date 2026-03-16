@@ -27,7 +27,6 @@ const classicStreamManagementSubTabs = [
   'advanced',
   'dataQuality',
   'retention',
-  'significantEvents',
   'knowledgeIndicators',
   'schemaEditor',
   'schema',

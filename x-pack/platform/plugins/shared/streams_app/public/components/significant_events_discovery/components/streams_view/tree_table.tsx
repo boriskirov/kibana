@@ -316,8 +316,8 @@ export function StreamsTreeTable({
                     <EuiFlexItem grow={false}>
                       <EuiLink
                         data-test-subj={`streamsNameLink-${item.stream.name}`}
-                        href={router.link('/{key}/management/{tab}', {
-                          path: { key: item.stream.name, tab: 'significantEvents' },
+                        href={router.link('/{key}/significant-events', {
+                          path: { key: item.stream.name },
                         })}
                       >
                         <EuiHighlight search={searchQuery?.text ?? ''}>

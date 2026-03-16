@@ -21,13 +21,7 @@ import { QueryStreamSchemaEditor } from '../../query_streams/query_stream_schema
 import { QueryStreamsAdvancedView } from '../../query_streams/query_streams_advanced_view';
 import { FeedbackButton } from '../../feedback_button';
 
-const queryStreamManagementSubTabs = [
-  'overview',
-  'advanced',
-  'schema',
-  'significantEvents',
-  'attachments',
-] as const;
+const queryStreamManagementSubTabs = ['overview', 'advanced', 'schema', 'attachments'] as const;
 
 type QueryStreamManagementSubTab = (typeof queryStreamManagementSubTabs)[number];
 
@@ -51,7 +45,7 @@ export function QueryStreamDetailManagement({
     features: { attachments },
   } = useStreamsPrivileges();
 
-  const { isLoading, significantEvents } = useStreamsDetailManagementTabs({
+  const { isLoading } = useStreamsDetailManagementTabs({
     definition,
     refreshDefinition,
   });
@@ -87,10 +81,6 @@ export function QueryStreamDetailManagement({
     };
   }
 
-  if (significantEvents) {
-    tabs.significantEvents = significantEvents;
-  }
-
   tabs.advanced = {
     content: (
       <QueryStreamsAdvancedView definition={definition} refreshDefinition={refreshDefinition} />
@@ -109,6 +99,10 @@ export function QueryStreamDetailManagement({
       </EuiToolTip>
     ),
   };
+
+  if (tab === 'significantEvents') {
+    return <RedirectTo path="/{key}/significant-events" params={{ path: { key } }} />;
+  }
 
   if (!isValidManagementSubTab(tab) || !tabs[tab]?.content) {
     return (

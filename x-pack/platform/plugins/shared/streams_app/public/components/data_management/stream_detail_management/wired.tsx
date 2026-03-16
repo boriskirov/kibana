@@ -28,7 +28,6 @@ const wiredStreamManagementSubTabs = [
   'schema',
   'retention',
   'advanced',
-  'significantEvents',
   'knowledgeIndicators',
   'dataQuality',
   'attachments',
@@ -190,6 +189,10 @@ export function WiredStreamDetailManagement({
         params={{ path: { key, tab: redirectConfig.newTab } }}
       />
     );
+  }
+
+  if (tab === 'significantEvents') {
+    return <RedirectTo path="/{key}/significant-events" params={{ path: { key } }} />;
   }
 
   if (isValidManagementSubTab(tab)) {

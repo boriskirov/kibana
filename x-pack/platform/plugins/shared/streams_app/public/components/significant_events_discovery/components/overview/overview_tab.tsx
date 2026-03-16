@@ -34,6 +34,7 @@ import { useKibana } from '../../../../hooks/use_kibana';
 import { useStreamsAppFetch } from '../../../../hooks/use_streams_app_fetch';
 import { useStreamsAppRouter } from '../../../../hooks/use_streams_app_router';
 import { MermaidDiagram } from '../topology/topology_tab';
+import { SignificantEventsDiscoveryIllustration } from './overview_empty_illustration';
 
 const severityColors: Record<string, 'danger' | 'warning' | 'primary' | 'hollow'> = {
   critical: 'danger',
@@ -290,11 +291,21 @@ export function OverviewTab() {
   if (discoveries.length === 0 && suggestions.length === 0) {
     return (
       <EuiEmptyPrompt
-        icon={<EuiIcon type="discoverApp" size="xxl" />}
+        color="plain"
+        layout="horizontal"
+        css={{
+          '.euiEmptyPrompt__icon': {
+            maxInlineSize: 'unset !important',
+          },
+          '.euiEmptyPrompt__actions': {
+            flexShrink: 0,
+          },
+        }}
+        icon={<SignificantEventsDiscoveryIllustration />}
         title={
           <h2>
             {i18n.translate('xpack.streams.overview.emptyTitle', {
-              defaultMessage: 'Welcome to Significant Events Discovery',
+              defaultMessage: 'Currently no insights detected',
             })}
           </h2>
         }
@@ -302,17 +313,28 @@ export function OverviewTab() {
           <p>
             {i18n.translate('xpack.streams.overview.emptyDescription', {
               defaultMessage:
-                'No discoveries or suggestions yet. Go to the Discoveries tab to generate your first analysis, or use the Agent Builder to explore your streams.',
+                'We are listening for events, it seems your system is currently smoothly currently',
             })}
           </p>
         }
-        actions={[
-          <EuiLink href={router.link('/_discovery/{tab}', { path: { tab: 'discoveries' } })}>
-            {i18n.translate('xpack.streams.overview.goToDiscoveries', {
-              defaultMessage: 'Go to Discoveries',
-            })}
-          </EuiLink>,
-        ]}
+        footer={
+          <EuiFlexGroup justifyContent="center">
+            <EuiFlexItem grow={false}>
+              <EuiButton
+                iconType="pause"
+                size="m"
+                fill
+                isLoading
+                data-test-subj="streamsOverviewListeningButton"
+              >
+                {i18n.translate(
+                  'xpack.streams.significantEventsDiscovery.runDiscoveryButton',
+                  { defaultMessage: 'Listening for events' }
+                )}
+              </EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        }
       />
     );
   }
